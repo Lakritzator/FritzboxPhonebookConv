@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>FritzboxPhonebookConv</AssemblyName>
+    <RootNamespace>FritzboxPhonebookConv</RootNamespace>
+    <LangVersion>9.0</LangVersion>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- System.Net.Http is not included automatically for net48 SDK-style projects -->
+    <Reference Include="System.Net.Http"/>
+  </ItemGroup>
+
+</Project>
