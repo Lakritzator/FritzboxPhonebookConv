@@ -56,9 +56,8 @@ namespace FritzboxPhonebookConv.Services
                 "GetPhonebookList",
                 string.Empty).ConfigureAwait(false);
 
-            XNamespace ns = ContactServiceType;
             XDocument doc = XDocument.Parse(responseXml);
-            string idList = doc.Descendants(ns + "NewPhonebookList").FirstOrDefault()?.Value ?? string.Empty;
+            string idList = doc.Descendants("NewPhonebookList").FirstOrDefault()?.Value ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(idList))
                 return new List<Phonebook>();
@@ -85,12 +84,11 @@ namespace FritzboxPhonebookConv.Services
                 "GetPhonebook",
                 $"<NewPhonebookID>{id}</NewPhonebookID>").ConfigureAwait(false);
 
-            XNamespace ns = ContactServiceType;
             XDocument doc = XDocument.Parse(responseXml);
 
-            string name = doc.Descendants(ns + "NewPhonebookName").FirstOrDefault()?.Value
+            string name = doc.Descendants("NewPhonebookName").FirstOrDefault()?.Value
                           ?? $"Phonebook {id}";
-            string url = doc.Descendants(ns + "NewPhonebookURL").FirstOrDefault()?.Value;
+            string url = doc.Descendants("NewPhonebookURL").FirstOrDefault()?.Value;
 
             if (string.IsNullOrEmpty(url))
                 return null;
