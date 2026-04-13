@@ -108,7 +108,7 @@ namespace FritzboxPhonebookConv.Services
 
             HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return await ReadContentAsStringAsync(response.Content).ConfigureAwait(false);
         }
 
         private async Task<string> SendSoapRequestAsync(
@@ -139,13 +139,41 @@ namespace FritzboxPhonebookConv.Services
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    string errorBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    string errorBody = await ReadContentAsStringAsync(response.Content).ConfigureAwait(false);
                     throw new InvalidOperationException(
                         $"SOAP call '{action}' failed ({(int)response.StatusCode} {response.ReasonPhrase}): {errorBody}");
                 }
 
-                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return await ReadContentAsStringAsync(response.Content).ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Reads HTTP content as a string, tolerating invalid or quoted charset values in the
+        /// Content-Type header (e.g. <c>charset="utf-8"</c>) that would otherwise cause
+        /// <see cref="HttpContent.ReadAsStringAsync"/> to throw. Falls back to UTF-8.
+        /// </summary>
+        private static async Task<string> ReadContentAsStringAsync(HttpContent content)
+        {
+            byte[] bytes = await content.ReadAsByteArrayAsync().ConfigureAwait(false);
+
+            Encoding encoding = Encoding.UTF8;
+            string charSet = content.Headers?.ContentType?.CharSet;
+            if (!string.IsNullOrWhiteSpace(charSet))
+            {
+                // Strip surrounding quotes that some devices (e.g. Fritz!Box) include.
+                charSet = charSet.Trim().Trim('"', '\'');
+                try
+                {
+                    encoding = Encoding.GetEncoding(charSet);
+                }
+                catch (ArgumentException)
+                {
+                    // Invalid charset — fall back to UTF-8.
+                }
+            }
+
+            return encoding.GetString(bytes);
         }
 
         public void Dispose()
