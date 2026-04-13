@@ -54,6 +54,8 @@ The password is **not** saved for security reasons.
 
 ---
 
+There are available xslt files which you might be able to use for your use-case here: https://github.com/blacksenator/fbcontactconv
+
 ## Sample XSLT
 
 A ready-to-use stylesheet is provided under `FritzboxPhonebookConv/Samples/fritzbox_to_simple_xml.xslt`.  
